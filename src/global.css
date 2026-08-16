@@ -2,3 +2,334 @@
 @tailwind components;
 @tailwind utilities;
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ---------- Background ---------- */
+    --background: 40 30% 98%;
+    --surface: 0 0% 100%;
+    --surface-secondary: 40 25% 96%;
+    --surface-tertiary: 250 30% 97%;
+
+    /* ---------- Text ---------- */
+    --foreground: 228 25% 12%;
+    --text-primary: 228 25% 12%;
+    --text-secondary: 228 12% 38%;
+    --text-muted: 228 8% 56%;
+    --text-subtle: 228 7% 68%;
+
+    /* ---------- Brand Purple ---------- */
+    --primary: 250 55% 57%;
+    --primary-dark: 250 55% 48%;
+    --primary-light: 250 70% 94%;
+    --primary-soft: 250 55% 98%;
+
+    /* ---------- Purple Secondary ---------- */
+    --purple-100: 250 70% 95%;
+    --purple-200: 250 60% 89%;
+    --purple-300: 250 55% 80%;
+    --purple-500: 250 55% 57%;
+    --purple-600: 250 55% 48%;
+
+    /* ---------- Green ---------- */
+    --green: 158 55% 38%;
+    --green-dark: 158 58% 31%;
+    --green-light: 155 48% 91%;
+    --green-soft: 155 45% 97%;
+
+    /* ---------- Yellow ---------- */
+    --yellow: 43 95% 55%;
+    --yellow-dark: 39 88% 45%;
+    --yellow-light: 45 100% 91%;
+    --yellow-soft: 45 100% 97%;
+
+    /* ---------- Orange / Streak ---------- */
+    --orange: 18 90% 56%;
+    --orange-light: 20 100% 94%;
+
+    /* ---------- Blue ---------- */
+    --blue: 211 80% 58%;
+    --blue-light: 210 85% 94%;
+
+    /* ---------- Red ---------- */
+    --red: 0 72% 56%;
+    --red-light: 0 75% 94%;
+
+    /* ---------- Borders ---------- */
+    --border: 228 14% 89%;
+    --border-light: 228 14% 94%;
+    --border-strong: 228 12% 80%;
+
+    /* ---------- Cards ---------- */
+    --card: 0 0% 100%;
+    --card-foreground: 228 25% 12%;
+
+    /* ---------- Inputs ---------- */
+    --input: 0 0% 100%;
+    --input-border: 228 14% 85%;
+    --input-focus: 250 55% 57%;
+
+    /* ---------- Progress ---------- */
+    --progress-background: 228 12% 91%;
+    --progress-fill: 250 55% 57%;
+
+    /* ---------- XP ---------- */
+    --xp: 43 95% 55%;
+    --xp-background: 45 100% 94%;
+
+    /* ---------- Streak ---------- */
+    --streak: 18 90% 56%;
+    --streak-background: 20 100% 95%;
+
+    /* ---------- Radius ---------- */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
+    --radius-full: 9999px;
+  }
+
+  .dark {
+    /* ---------- Background ---------- */
+    --background: 230 18% 8%;
+    --surface: 230 17% 12%;
+    --surface-secondary: 230 16% 15%;
+    --surface-tertiary: 230 15% 18%;
+
+    /* ---------- Text ---------- */
+    --foreground: 0 0% 97%;
+    --text-primary: 0 0% 97%;
+    --text-secondary: 230 10% 74%;
+    --text-muted: 230 8% 56%;
+    --text-subtle: 230 7% 43%;
+
+    /* ---------- Brand Purple ---------- */
+    --primary: 250 70% 68%;
+    --primary-dark: 250 65% 59%;
+    --primary-light: 250 35% 22%;
+    --primary-soft: 250 30% 16%;
+
+    /* ---------- Purple Secondary ---------- */
+    --purple-100: 250 35% 22%;
+    --purple-200: 250 32% 27%;
+    --purple-300: 250 40% 38%;
+    --purple-500: 250 70% 68%;
+    --purple-600: 250 65% 59%;
+
+    /* ---------- Green ---------- */
+    --green: 158 55% 52%;
+    --green-dark: 158 55% 44%;
+    --green-light: 158 30% 19%;
+    --green-soft: 158 25% 15%;
+
+    /* ---------- Yellow ---------- */
+    --yellow: 43 96% 61%;
+    --yellow-dark: 40 90% 53%;
+    --yellow-light: 43 35% 20%;
+    --yellow-soft: 43 25% 15%;
+
+    /* ---------- Orange ---------- */
+    --orange: 18 90% 61%;
+    --orange-light: 18 35% 19%;
+
+    /* ---------- Blue ---------- */
+    --blue: 211 85% 66%;
+    --blue-light: 211 35% 19%;
+
+    /* ---------- Red ---------- */
+    --red: 0 75% 64%;
+    --red-light: 0 35% 19%;
+
+    /* ---------- Borders ---------- */
+    --border: 230 12% 24%;
+    --border-light: 230 12% 19%;
+    --border-strong: 230 10% 32%;
+
+    /* ---------- Cards ---------- */
+    --card: 230 17% 12%;
+    --card-foreground: 0 0% 97%;
+
+    /* ---------- Inputs ---------- */
+    --input: 230 16% 14%;
+    --input-border: 230 12% 28%;
+    --input-focus: 250 70% 68%;
+
+    /* ---------- Progress ---------- */
+    --progress-background: 230 13% 25%;
+    --progress-fill: 250 70% 68%;
+
+    /* ---------- XP ---------- */
+    --xp: 43 96% 61%;
+    --xp-background: 43 30% 19%;
+
+    /* ---------- Streak ---------- */
+    --streak: 18 90% 61%;
+    --streak-background: 18 30% 19%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
+@layer utilities {
+  .bg-app {
+    background-color: hsl(var(--background));
+  }
+
+  .bg-surface {
+    background-color: hsl(var(--surface));
+  }
+
+  .bg-surface-secondary {
+    background-color: hsl(var(--surface-secondary));
+  }
+
+  .bg-surface-tertiary {
+    background-color: hsl(var(--surface-tertiary));
+  }
+
+  .bg-primary-soft {
+    background-color: hsl(var(--primary-soft));
+  }
+
+  .bg-purple-light {
+    background-color: hsl(var(--purple-100));
+  }
+
+  .bg-green-light {
+    background-color: hsl(var(--green-light));
+  }
+
+  .bg-yellow-light {
+    background-color: hsl(var(--yellow-light));
+  }
+
+  .bg-orange-light {
+    background-color: hsl(var(--orange-light));
+  }
+
+  .bg-blue-light {
+    background-color: hsl(var(--blue-light));
+  }
+
+  /* ---------- Brand ---------- */
+
+  .bg-brand {
+    background-color: hsl(var(--primary));
+  }
+
+  .bg-brand-dark {
+    background-color: hsl(var(--primary-dark));
+  }
+
+  .text-brand {
+    color: hsl(var(--primary));
+  }
+
+  /* ---------- Text ---------- */
+
+  .text-app {
+    color: hsl(var(--foreground));
+  }
+
+  .text-primary-app {
+    color: hsl(var(--text-primary));
+  }
+
+  .text-secondary-app {
+    color: hsl(var(--text-secondary));
+  }
+
+  .text-muted-app {
+    color: hsl(var(--text-muted));
+  }
+
+  .text-subtle-app {
+    color: hsl(var(--text-subtle));
+  }
+
+  /* ---------- Green ---------- */
+
+  .bg-green {
+    background-color: hsl(var(--green));
+  }
+
+  .text-green {
+    color: hsl(var(--green));
+  }
+
+  /* ---------- Yellow ---------- */
+
+  .bg-yellow {
+    background-color: hsl(var(--yellow));
+  }
+
+  .text-yellow {
+    color: hsl(var(--yellow-dark));
+  }
+
+  /* ---------- Orange ---------- */
+
+  .bg-orange {
+    background-color: hsl(var(--orange));
+  }
+
+  .text-orange {
+    color: hsl(var(--orange));
+  }
+
+  /* ---------- Progress ---------- */
+
+  .bg-progress {
+    background-color: hsl(var(--progress-background));
+  }
+
+  .bg-progress-fill {
+    background-color: hsl(var(--progress-fill));
+  }
+
+  /* ---------- Cards ---------- */
+
+  .app-card {
+    background-color: hsl(var(--card));
+    border-width: 1px;
+    border-color: hsl(var(--border));
+    border-radius: var(--radius-xl);
+  }
+
+  /* ---------- Radius ---------- */
+
+  .rounded-app-sm {
+    border-radius: var(--radius-sm);
+  }
+
+  .rounded-app-md {
+    border-radius: var(--radius-md);
+  }
+
+  .rounded-app-lg {
+    border-radius: var(--radius-lg);
+  }
+
+  .rounded-app-xl {
+    border-radius: var(--radius-xl);
+  }
+
+  .rounded-app-2xl {
+    border-radius: var(--radius-2xl);
+  }
+}
