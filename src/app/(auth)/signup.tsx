@@ -1,14 +1,17 @@
+import { signUp } from "@/features/auth/auth.service";
+import { getAuthErrorMessage } from "@/utils/authErrors";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,6 +19,34 @@ export default function SignupScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSignup = async () => {
+    if (!name.trim() || !email.trim() || !password) {
+      Alert.alert("Missing information", "Please fill in all fields.");
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert(
+        "Password too short",
+        "Your password must contain at least 6 characters.",
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await signUp(name.trim(), email.trim(), password);
+    } catch (error: any) {
+      console.log(error);
+
+      Alert.alert("Sign up failed", getAuthErrorMessage(error.code));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -100,9 +131,13 @@ export default function SignupScreen() {
             </Text>
 
             {/* Create account */}
-            <TouchableOpacity className="mt-7 h-14 items-center justify-center rounded-2xl bg-primary">
+            <TouchableOpacity
+              onPress={handleSignup}
+              disabled={loading}
+              className="mt-7 h-14 items-center justify-center rounded-2xl bg-primary"
+            >
               <Text className="font-nunito-bold text-base text-white">
-                Create Account
+                {loading ? "Creating account..." : "Create Account"}
               </Text>
             </TouchableOpacity>
           </View>

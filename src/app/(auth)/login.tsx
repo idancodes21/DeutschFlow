@@ -1,20 +1,48 @@
+import { login } from "@/features/auth/auth.service";
+import { getAuthErrorMessage } from "@/utils/authErrors";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email.trim() || !password) {
+      Alert.alert(
+        "Missing information",
+        "Please enter your email and password.",
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await login(email.trim(), password);
+
+      // Auth state will handle navigation.
+    } catch (error: any) {
+      console.log(error);
+
+      Alert.alert("Login failed", getAuthErrorMessage(error.code));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -86,9 +114,13 @@ export default function LoginScreen() {
             </TouchableOpacity>
 
             {/* Login */}
-            <TouchableOpacity className="mt-7 h-14 items-center justify-center rounded-2xl bg-primary">
+            <TouchableOpacity
+              onPress={handleLogin}
+              disabled={loading}
+              className="mt-7 h-14 items-center justify-center rounded-2xl bg-primary"
+            >
               <Text className="font-nunito-bold text-base text-white">
-                Log In
+                {loading ? "Logging in..." : "Log In"}
               </Text>
             </TouchableOpacity>
           </View>
