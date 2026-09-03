@@ -38,7 +38,7 @@ export default function WelcomeScreen() {
         {/* Actions */}
         <View className="pb-6">
           <TouchableOpacity
-            onPress={() => router.push("/")}
+            onPress={() => router.push("/signup")}
             className="h-14 items-center justify-center rounded-2xl bg-primary"
           >
             <Text className="font-nunito-bold text-base text-white">
@@ -47,7 +47,7 @@ export default function WelcomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => router.push("/")}
+            onPress={() => router.push("/login")}
             className="mt-4 h-14 flex-row items-center justify-center rounded-2xl border border-gray-200 bg-white"
           >
             <Text className="font-nunito-bold text-base text-[#161A2A]">
