@@ -309,7 +309,7 @@ export default function SignupScreen() {
           <TextInput
             value={firstName}
             onChangeText={setFirstName}
-            placeholder="Collins"
+            placeholder="John"
             placeholderTextColor="#A1A4AE"
             autoCapitalize="words"
             className="h-14 rounded-2xl border border-gray-200 bg-white px-4 font-nunito text-base text-[#161A2A]"

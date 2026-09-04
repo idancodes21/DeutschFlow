@@ -8,7 +8,6 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const { isLoaded, isSignedIn } = useAuth();
 
-  // Wait for Clerk to determine the authentication state
   if (!isLoaded) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
@@ -17,7 +16,6 @@ export default function TabsLayout() {
     );
   }
 
-  // Protect the entire tabs group
   if (!isSignedIn) {
     return <Redirect href="/(auth)/welcome" />;
   }

@@ -9,10 +9,6 @@ export default function WelcomeScreen() {
       <View className="flex-1 px-6">
         {/* Logo */}
         <View className="items-center pt-8">
-          <View className="h-12 w-12 items-center justify-center rounded-2xl bg-primary">
-            <Text className="text-2xl">🇩🇪</Text>
-          </View>
-
           <Text className="mt-3 font-fredoka-semibold text-2xl text-[#161A2A]">
             DeutschFlow
           </Text>

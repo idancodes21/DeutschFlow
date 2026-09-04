@@ -41,7 +41,6 @@ export default function LoginScreen() {
     try {
       setLoading(true);
 
-      // Current Clerk Expo password sign-in API
       const { error } = await signIn.password({
         identifier: email.trim(),
         password,
@@ -56,6 +55,7 @@ export default function LoginScreen() {
         );
         return;
       }
+
       router.replace("/(tabs)");
     } catch (error: any) {
       console.log("Login error:", error);
