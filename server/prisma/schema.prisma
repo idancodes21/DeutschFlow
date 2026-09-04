@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -10,4 +5,201 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id      String @id @default(cuid())
+  clerkId String @unique
+  email   String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile            Profile?
+  learningProgress   LearningProgress?
+  lessonProgress     LessonProgress[]
+  vocabularyProgress VocabularyProgress[]
+  grammarProgress    GrammarProgress[]
+  practiceHistory    PracticeHistory[]
+}
+
+model Profile {
+  id String @id @default(cuid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  firstName String?
+  lastName  String?
+  username  String? @unique
+  avatarUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LearningProgress {
+  id String @id @default(cuid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  level  Int @default(1)
+  xp     Int @default(0)
+  streak Int @default(0)
+
+  lessonsCompleted Int @default(0)
+  wordsLearned     Int @default(0)
+  grammarCompleted Int @default(0)
+
+  lastActivityAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lesson {
+  id String @id @default(cuid())
+
+  title       String
+  description String?
+  level       Int
+  order       Int
+
+  isPublished Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  progress LessonProgress[]
+
+  @@index([level])
+  @@index([isPublished])
+}
+
+model LessonProgress {
+  id String @id @default(cuid())
+
+  userId   String
+  lessonId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  completed Boolean @default(false)
+  progress  Int     @default(0)
+  xpEarned  Int     @default(0)
+
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+}
+
+model Vocabulary {
+  id String @id @default(cuid())
+
+  german  String
+  english String
+  article String?
+  plural  String?
+  example String?
+
+  level    Int
+  category String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  progress VocabularyProgress[]
+
+  @@index([level])
+  @@index([category])
+}
+
+model VocabularyProgress {
+  id String @id @default(cuid())
+
+  userId       String
+  vocabularyId String
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+
+  masteryLevel Int @default(0)
+  correctCount Int @default(0)
+  wrongCount   Int @default(0)
+
+  lastReviewedAt DateTime?
+  nextReviewAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, vocabularyId])
+  @@index([userId])
+  @@index([nextReviewAt])
+}
+
+model Grammar {
+  id String @id @default(cuid())
+
+  title       String
+  explanation String
+  example     String?
+
+  level    Int
+  category String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  progress GrammarProgress[]
+
+  @@index([level])
+  @@index([category])
+}
+
+model GrammarProgress {
+  id String @id @default(cuid())
+
+  userId    String
+  grammarId String
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  grammar Grammar @relation(fields: [grammarId], references: [id], onDelete: Cascade)
+
+  masteryLevel Int @default(0)
+  correctCount Int @default(0)
+  wrongCount   Int @default(0)
+
+  lastReviewedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, grammarId])
+  @@index([userId])
+}
+
+model PracticeHistory {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type  String
+  score Int
+  total Int
+
+  xpEarned Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }
