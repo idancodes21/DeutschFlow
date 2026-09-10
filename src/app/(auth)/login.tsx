@@ -1,7 +1,7 @@
 import { useAuth, useSignIn } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -17,7 +17,6 @@ import {
 export default function LoginScreen() {
   const router = useRouter();
 
-  // Current Clerk Expo API
   const { isLoaded, isSignedIn } = useAuth();
   const { signIn } = useSignIn();
 
@@ -26,6 +25,12 @@ export default function LoginScreen() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isSignedIn) {
+      router.replace("/(tabs)");
+    }
+  }, [isSignedIn, router]);
 
   const handleLogin = async () => {
     if (!isLoaded) return;
@@ -56,14 +61,38 @@ export default function LoginScreen() {
         return;
       }
 
-      router.replace("/(tabs)");
+      console.log("Sign-in status:", signIn.status);
+
+      if (signIn.status === "complete") {
+        const { error: finalizeError } = await signIn.finalize();
+
+        if (finalizeError) {
+          Alert.alert(
+            "Login failed",
+            finalizeError.longMessage ||
+              finalizeError.message ||
+              "Unable to complete sign in.",
+          );
+          return;
+        }
+
+        console.log("Login finalized successfully");
+      } else {
+        console.log("Sign-in requires additional steps:", signIn.status);
+
+        Alert.alert(
+          "Additional verification required",
+          `Sign-in status: ${signIn.status}`,
+        );
+      }
     } catch (error: any) {
       console.log("Login error:", error);
 
       const message =
         error?.errors?.[0]?.longMessage ||
         error?.errors?.[0]?.message ||
-        "Unable to sign in. Please check your credentials.";
+        error?.message ||
+        "Unable to sign in. Please try again.";
 
       Alert.alert("Login failed", message);
     } finally {
@@ -71,19 +100,12 @@ export default function LoginScreen() {
     }
   };
 
-  // Wait for Clerk to initialize
   if (!isLoaded) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#6554C0" />
       </View>
     );
-  }
-
-  // If already signed in, go to the app
-  if (isSignedIn) {
-    router.replace("/(tabs)");
-    return null;
   }
 
   return (
