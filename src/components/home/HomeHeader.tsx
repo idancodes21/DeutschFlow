@@ -1,7 +1,19 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image, Text, View } from "react-native";
 
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+
 export default function HomeHeader() {
+  const { data, isLoading } = useCurrentUser();
+
+  const user = data?.user;
+  const profile = user?.profile;
+  const progress = user?.learningProgress;
+
+  const firstName = profile?.firstName || "there";
+  const streak = progress?.streak ?? 0;
+  const xp = progress?.xp ?? 0;
+
   return (
     <View className="relative">
       <Image
@@ -19,8 +31,9 @@ export default function HomeHeader() {
 
           <View className="absolute right-0 top-0 h-2 w-2 rounded-full bg-red-500" />
         </View>
+
         <Text className="font-fredoka-semibold text-3xl text-[#161A2A]">
-          Hello, Collins! 👋
+          Hello, {isLoading ? "..." : firstName}! 👋
         </Text>
 
         <Text className="mt-2 max-w-[220px] font-nunito text-base leading-6 text-[#555968]">
@@ -32,7 +45,7 @@ export default function HomeHeader() {
             <Text className="mr-1 text-sm">🔥</Text>
 
             <Text className="font-nunito-semibold text-sm text-[#161A2A]">
-              7 day streak
+              {isLoading ? "..." : `${streak} day streak`}
             </Text>
           </View>
 
@@ -40,7 +53,7 @@ export default function HomeHeader() {
             <Text className="mr-1 text-sm">⭐</Text>
 
             <Text className="font-nunito-semibold text-sm text-[#161A2A]">
-              820 XP
+              {isLoading ? "..." : `${xp} XP`}
             </Text>
           </View>
         </View>
