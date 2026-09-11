@@ -126,4 +126,99 @@ router.get("/continue", async (req, res) => {
   }
 });
 
+/**
+ * Get the user's learning path
+ *
+ * GET /api/lessons/path
+ */
+router.get("/path", async (req, res) => {
+  try {
+    const { isAuthenticated, userId } = getAuth(req);
+
+    if (!isAuthenticated || !userId) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        clerkId: userId,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const lessons = await prisma.lesson.findMany({
+      where: {
+        isPublished: true,
+      },
+      orderBy: [
+        {
+          level: "asc",
+        },
+        {
+          order: "asc",
+        },
+      ],
+      include: {
+        progress: {
+          where: {
+            userId: user.id,
+          },
+          select: {
+            progress: true,
+            completed: true,
+            startedAt: true,
+            completedAt: true,
+          },
+        },
+      },
+    });
+
+    let previousLessonCompleted = true;
+
+    const path = lessons.map((lesson) => {
+      const lessonProgress = lesson.progress[0] ?? null;
+
+      const completed = lessonProgress?.completed ?? false;
+      const progress = lessonProgress?.progress ?? 0;
+
+      const locked = !previousLessonCompleted;
+
+      const status = completed ? "completed" : locked ? "locked" : "current";
+
+      previousLessonCompleted = completed;
+
+      return {
+        id: lesson.id,
+        title: lesson.title,
+        description: lesson.description,
+        level: lesson.level,
+        order: lesson.order,
+        progress,
+        completed,
+        locked,
+        status,
+        startedAt: lessonProgress?.startedAt ?? null,
+        completedAt: lessonProgress?.completedAt ?? null,
+      };
+    });
+
+    return res.json({
+      path,
+    });
+  } catch (error) {
+    console.error("Failed to get learning path:", error);
+
+    return res.status(500).json({
+      message: "Failed to get learning path",
+    });
+  }
+});
+
 export default router;
