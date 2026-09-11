@@ -4,6 +4,7 @@ import { clerkMiddleware } from "@clerk/express";
 import cors from "cors";
 import express from "express";
 import healthRouter from "./routes/health.js";
+import lessonsRouter from "./routes/lessons.js";
 import usersRouter from "./routes/users.js";
 
 const app = express();
@@ -23,6 +24,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api/health", healthRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/lessons", lessonsRouter);
 
 app.listen(PORT, () => {
   console.log(`DeutschFlow API running on port ${PORT}`);
