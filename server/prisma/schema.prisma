@@ -7,6 +7,35 @@ datasource db {
   provider = "postgresql"
 }
 
+enum CefrLevel {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+}
+
+enum SectionType {
+  EXPLAINER
+  PATTERN_DRILLS
+  GUIDED_SENTENCE
+  RECALL
+  MIXED_REVIEW
+  LISTENING
+}
+
+enum ActivityType {
+  INFO
+  MULTIPLE_CHOICE
+  FILL_BLANK
+  CONJUGATION
+  SENTENCE_BUILDER
+  MATCH
+  WORD_ORDER
+  LISTENING_CHOICE
+}
+
 model User {
   id      String @id @default(cuid())
   clerkId String @unique
@@ -15,12 +44,18 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  profile            Profile?
-  learningProgress   LearningProgress?
+  profile          Profile?
+  learningProgress LearningProgress?
+
   lessonProgress     LessonProgress[]
   vocabularyProgress VocabularyProgress[]
   grammarProgress    GrammarProgress[]
   practiceHistory    PracticeHistory[]
+
+  unitProgress     UnitProgress[]
+  sectionProgress  SectionProgress[]
+  activityProgress ActivityProgress[]
+  activityAttempts ActivityAttempt[]
 }
 
 model Profile {
@@ -49,6 +84,9 @@ model LearningProgress {
   streak Int @default(0)
 
   lessonsCompleted Int @default(0)
+
+  unitsCompleted Int @default(0)
+
   wordsLearned     Int @default(0)
   grammarCompleted Int @default(0)
 
@@ -100,6 +138,218 @@ model LessonProgress {
   @@index([userId])
 }
 
+model LearningPath {
+  id String @id @default(cuid())
+
+  slug        String  @unique
+  name        String
+  description String?
+
+  order       Int
+  isPublished Boolean @default(false)
+
+  units Unit[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isPublished])
+}
+
+model Unit {
+  id String @id @default(cuid())
+
+  pathId String
+  path   LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+
+  order Int
+
+  cefrLevel CefrLevel?
+
+  isPublished Boolean @default(false)
+
+  sections UnitSection[]
+
+  progress UnitProgress[]
+
+  vocabularyLinks UnitVocabulary[]
+  grammarLinks    UnitGrammar[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([pathId, order])
+  @@index([pathId])
+  @@index([cefrLevel])
+  @@index([isPublished])
+}
+
+model UnitSection {
+  id String @id @default(cuid())
+
+  unitId String
+  unit   Unit   @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  type        SectionType
+  title       String
+  description String?
+
+  order Int
+
+  activities Activity[]
+  progress   SectionProgress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([unitId, order])
+  @@index([unitId])
+}
+
+model Activity {
+  id String @id @default(cuid())
+
+  sectionId String
+  section   UnitSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  type  ActivityType
+  order Int
+
+  title       String?
+  prompt      String?
+  explanation String?
+
+  content  Json
+  solution Json?
+
+  audioUrl String?
+  imageUrl String?
+
+  xpReward Int @default(5)
+
+  isPublished Boolean @default(false)
+
+  progress ActivityProgress[]
+  attempts ActivityAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sectionId, order])
+  @@index([sectionId])
+  @@index([type])
+  @@index([isPublished])
+}
+
+model UnitProgress {
+  id String @id @default(cuid())
+
+  userId String
+  unitId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  progress     Int @default(0)
+  masteryScore Int @default(0)
+
+  completed Boolean @default(false)
+
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, unitId])
+  @@index([userId])
+  @@index([unitId])
+}
+
+model SectionProgress {
+  id String @id @default(cuid())
+
+  userId    String
+  sectionId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  section UnitSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  progress     Int @default(0)
+  masteryScore Int @default(0)
+
+  completed Boolean @default(false)
+
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, sectionId])
+  @@index([userId])
+  @@index([sectionId])
+}
+
+model ActivityProgress {
+  id String @id @default(cuid())
+
+  userId     String
+  activityId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  attempts     Int @default(0)
+  correctCount Int @default(0)
+  wrongCount   Int @default(0)
+
+  bestScore    Int @default(0)
+  masteryScore Int @default(0)
+
+  completed Boolean @default(false)
+
+  lastAttemptAt DateTime?
+  completedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, activityId])
+  @@index([userId])
+  @@index([activityId])
+}
+
+model ActivityAttempt {
+  id String @id @default(cuid())
+
+  userId     String
+  activityId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  response Json?
+
+  isCorrect Boolean
+  score     Int     @default(0)
+
+  durationMs Int?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([activityId])
+  @@index([userId, activityId, createdAt])
+}
+
 model Vocabulary {
   id String @id @default(cuid())
 
@@ -112,13 +362,31 @@ model Vocabulary {
   level    Int
   category String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // New curriculum relationship
+  unitLinks UnitVocabulary[]
 
   progress VocabularyProgress[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([level])
   @@index([category])
+}
+
+model UnitVocabulary {
+  unitId       String
+  vocabularyId String
+
+  unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+
+  order  Int
+  isCore Boolean @default(true)
+
+  @@id([unitId, vocabularyId])
+  @@index([vocabularyId])
 }
 
 model VocabularyProgress {
@@ -127,7 +395,8 @@ model VocabularyProgress {
   userId       String
   vocabularyId String
 
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   vocabulary Vocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
 
   masteryLevel Int @default(0)
@@ -155,13 +424,31 @@ model Grammar {
   level    Int
   category String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // New curriculum relationship
+  unitLinks UnitGrammar[]
 
   progress GrammarProgress[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([level])
   @@index([category])
+}
+
+model UnitGrammar {
+  unitId    String
+  grammarId String
+
+  unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  grammar Grammar @relation(fields: [grammarId], references: [id], onDelete: Cascade)
+
+  order  Int
+  isCore Boolean @default(true)
+
+  @@id([unitId, grammarId])
+  @@index([grammarId])
 }
 
 model GrammarProgress {
@@ -170,7 +457,8 @@ model GrammarProgress {
   userId    String
   grammarId String
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   grammar Grammar @relation(fields: [grammarId], references: [id], onDelete: Cascade)
 
   masteryLevel Int @default(0)
