@@ -2,29 +2,38 @@ import { useQuery } from "@tanstack/react-query";
 
 import { apiFetch } from "@/lib/api";
 
-export type LessonStatus = "completed" | "current" | "locked";
+export type UnitStatus = "completed" | "current" | "locked";
 
-export interface LearningPathLesson {
+export interface LearningPathUnit {
   id: string;
   title: string;
   description: string | null;
-  level: number;
   order: number;
+  cefrLevel: string | null;
   progress: number;
+  masteryScore: number;
   completed: boolean;
   locked: boolean;
-  status: LessonStatus;
+  status: UnitStatus;
   startedAt: string | null;
   completedAt: string | null;
 }
 
+export interface LearningPath {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  units: LearningPathUnit[];
+}
+
 interface LearningPathResponse {
-  path: LearningPathLesson[];
+  path: LearningPath | null;
 }
 
 export function useLearningPath() {
   return useQuery<LearningPathResponse>({
     queryKey: ["learning-path"],
-    queryFn: () => apiFetch("/api/lessons/path"),
+    queryFn: () => apiFetch("/api/units/path"),
   });
 }

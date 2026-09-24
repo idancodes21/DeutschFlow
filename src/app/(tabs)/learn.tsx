@@ -1,23 +1,24 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 import {
-    type LearningPathLesson,
-    useLearningPath,
+  type LearningPathUnit,
+  useLearningPath,
 } from "@/hooks/useLearningPath";
 
-function LessonNode({
-  lesson,
+function UnitNode({
+  unit,
   isLast,
   onPress,
 }: {
-  lesson: LearningPathLesson;
+  unit: LearningPathUnit;
   isLast: boolean;
   onPress: () => void;
 }) {
-  const isCompleted = lesson.status === "completed";
-  const isCurrent = lesson.status === "current";
-  const isLocked = lesson.status === "locked";
+  const isCompleted = unit.status === "completed";
+  const isCurrent = unit.status === "current";
+  const isLocked = unit.status === "locked";
 
   return (
     <View className="flex-row">
@@ -44,11 +45,11 @@ function LessonNode({
         )}
       </View>
 
-      {/* Lesson card */}
+      {/* Unit card */}
       <TouchableOpacity
         disabled={isLocked}
-        onPress={onPress}
         activeOpacity={0.8}
+        onPress={onPress}
         className={`mb-5 flex-1 rounded-2xl border p-4 ${
           isCurrent
             ? "border-primary bg-white"
@@ -60,7 +61,7 @@ function LessonNode({
         <View className="flex-row items-start justify-between">
           <View className="flex-1 pr-3">
             <Text className="font-nunito-semibold text-xs uppercase tracking-wide text-[#777B87]">
-              Lesson {lesson.order}
+              Unit {unit.order}
             </Text>
 
             <Text
@@ -68,11 +69,11 @@ function LessonNode({
                 isLocked ? "text-[#9CA3AF]" : "text-[#161A2A]"
               }`}
             >
-              {lesson.title}
+              {unit.title}
             </Text>
           </View>
 
-          {isCurrent && (
+          {unit.status === "current" && (
             <View className="rounded-full bg-purple-100 px-3 py-1">
               <Text className="font-nunito-bold text-xs text-primary">
                 CURRENT
@@ -80,20 +81,20 @@ function LessonNode({
             </View>
           )}
 
-          {isCompleted && (
+          {unit.status === "completed" && (
             <View className="rounded-full bg-green/10 px-3 py-1">
               <Text className="font-nunito-bold text-xs text-green">DONE</Text>
             </View>
           )}
         </View>
 
-        {lesson.description && (
+        {unit.description && (
           <Text
             className={`mt-2 font-nunito text-sm leading-5 ${
               isLocked ? "text-[#9CA3AF]" : "text-[#777B87]"
             }`}
           >
-            {lesson.description}
+            {unit.description}
           </Text>
         )}
 
@@ -103,13 +104,13 @@ function LessonNode({
               <View
                 className="h-full rounded-full bg-primary"
                 style={{
-                  width: `${Math.min(Math.max(lesson.progress, 0), 100)}%`,
+                  width: `${Math.min(Math.max(unit.progress, 0), 100)}%`,
                 }}
               />
             </View>
 
             <Text className="mt-2 font-nunito-semibold text-xs text-primary">
-              {lesson.progress}% complete
+              {unit.progress}% complete
             </Text>
           </View>
         )}
@@ -119,7 +120,7 @@ function LessonNode({
             <Ionicons name="lock-closed-outline" size={15} color="#9CA3AF" />
 
             <Text className="ml-1 font-nunito-semibold text-xs text-[#9CA3AF]">
-              Complete the previous lesson first
+              Complete the previous unit first
             </Text>
           </View>
         )}
@@ -131,11 +132,8 @@ function LessonNode({
 export default function LearnScreen() {
   const { data, isLoading, isError } = useLearningPath();
 
-  const lessons = data?.path ?? [];
-
-  const levels = Array.from(
-    new Set(lessons.map((lesson) => lesson.level)),
-  ).sort((a, b) => a - b);
+  const path = data?.path;
+  const units = path?.units ?? [];
 
   return (
     <View className="flex-1 bg-[#F8F7FC]">
@@ -143,14 +141,13 @@ export default function LearnScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        {/* Header */}
         <View className="px-5 pb-6 pt-14">
           <Text className="font-fredoka-semibold text-3xl text-[#161A2A]">
             Your Learning Path
           </Text>
 
           <Text className="mt-2 font-nunito text-base leading-6 text-[#777B87]">
-            Follow the path step by step and build your German skills.
+            {path?.description ?? "Build your German skills step by step."}
           </Text>
         </View>
 
@@ -178,60 +175,47 @@ export default function LearnScreen() {
           </View>
         )}
 
-        {!isLoading &&
-          !isError &&
-          levels.map((level) => {
-            const levelLessons = lessons.filter(
-              (lesson) => lesson.level === level,
-            );
+        {!isLoading && !isError && path && (
+          <View className="px-5">
+            <View className="mb-5 flex-row items-center justify-between">
+              <View>
+                <Text className="font-fredoka-semibold text-xl text-[#161A2A]">
+                  {path.name}
+                </Text>
 
-            const levelName =
-              level === 1
-                ? "A1 Beginner"
-                : level === 2
-                  ? "A2 Elementary"
-                  : `Level ${level}`;
-
-            const completedCount = levelLessons.filter(
-              (lesson) => lesson.completed,
-            ).length;
-
-            return (
-              <View key={level} className="px-5">
-                <View className="mb-4 mt-2 flex-row items-center justify-between">
-                  <View>
-                    <Text className="font-fredoka-semibold text-xl text-[#161A2A]">
-                      {levelName}
-                    </Text>
-
-                    <Text className="mt-1 font-nunito text-sm text-[#777B87]">
-                      {completedCount} of {levelLessons.length} lessons
-                      completed
-                    </Text>
-                  </View>
-
-                  <View className="rounded-full bg-purple-100 px-3 py-2">
-                    <Text className="font-nunito-bold text-xs text-primary">
-                      A{level}
-                    </Text>
-                  </View>
-                </View>
-
-                {levelLessons.map((lesson, index) => (
-                  <LessonNode
-                    key={lesson.id}
-                    lesson={lesson}
-                    isLast={index === levelLessons.length - 1}
-                    onPress={() => {
-                      // Actual lesson activity navigation will be added next.
-                    }}
-                  />
-                ))}
+                <Text className="mt-1 font-nunito text-sm text-[#777B87]">
+                  {units.length} units
+                </Text>
               </View>
-            );
-          })}
 
-        {!isLoading && !isError && lessons.length === 0 && (
+              <View className="rounded-full bg-purple-100 px-3 py-2">
+                <Text className="font-nunito-bold text-xs text-primary">
+                  {units[0]?.cefrLevel ?? "A1"}
+                </Text>
+              </View>
+            </View>
+
+            {units.map((unit, index) => (
+              <UnitNode
+                key={unit.id}
+                unit={unit}
+                isLast={index === units.length - 1}
+                onPress={() => {
+                  if (!unit.locked) {
+                    router.push({
+                      pathname: "/unit/[id]",
+                      params: {
+                        id: unit.id,
+                      },
+                    });
+                  }
+                }}
+              />
+            ))}
+          </View>
+        )}
+
+        {!isLoading && !isError && (!path || units.length === 0) && (
           <View className="px-5">
             <View className="rounded-2xl bg-white p-5">
               <Text className="font-fredoka-semibold text-lg text-[#161A2A]">
@@ -239,7 +223,7 @@ export default function LearnScreen() {
               </Text>
 
               <Text className="mt-2 font-nunito text-sm leading-5 text-[#777B87]">
-                Lessons will appear here once they are published.
+                Your lessons will appear here soon.
               </Text>
             </View>
           </View>
