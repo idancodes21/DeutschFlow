@@ -4,11 +4,12 @@ DeutschFlow helps learners master the German language by breaking down complex g
 
 ## Usage
 
-Users interact with the mobile application to complete language exercises. The interface presents a learning path where users can select their current unit and work through sections like vocabulary, grammar explanations, and listening drills. 
+Users interact with the mobile application to complete language exercises. The interface presents a learning path where users can select their current unit and work through sections like vocabulary, grammar explanations, and listening drills.
 
 The client application communicates with the backend to verify answers and update user statistics. A typical interaction involves sending an answer to the server for validation.
 
 The request payload contains the user's response:
+
 ```json
 {
   "response": "lerne"
@@ -16,6 +17,7 @@ The request payload contains the user's response:
 ```
 
 The server processes the attempt and returns the updated progress state:
+
 ```json
 {
   "result": {
@@ -31,34 +33,36 @@ The server processes the attempt and returns the updated progress state:
 
 ## Features
 
-*   **Structured Curriculum**: Organizes learning material into structured paths, units, and localized sections based on the CEFR language framework.
-*   **Interactive Exercises**: Supports multiple activity types including multiple-choice, fill-in-the-blank, conjugation, and sentence building.
-*   **Progress Tracking**: Monitors daily streaks, experience points, and lesson mastery to keep learners engaged.
-*   **Audio Pronunciation**: Utilizes native text-to-speech capabilities to help users practice their listening skills.
-*   **Secure Authentication**: Manages user sessions securely using Clerk integration.
+- **Structured Curriculum**: Organizes learning material into structured paths, units, and localized sections based on the CEFR language framework.
+- **Interactive Exercises**: Supports multiple activity types including multiple-choice, fill-in-the-blank, conjugation, and sentence building.
+- **Progress Tracking**: Monitors daily streaks, experience points, and lesson mastery to keep learners engaged.
+- **Audio Pronunciation**: Utilizes native text-to-speech capabilities to help users practice their listening skills.
+- **Secure Authentication**: Manages user sessions securely using Clerk integration.
 
 ## Technologies Used
 
-| Technology | Description |
-| :--- | :--- |
-| React Native | Cross-platform mobile framework |
-| Expo | Development platform for React Native |
-| TypeScript | Strongly typed programming language |
+| Technology   | Description                                    |
+| :----------- | :--------------------------------------------- |
+| React Native | Cross-platform mobile framework                |
+| Expo         | Development platform for React Native          |
+| TypeScript   | Strongly typed programming language            |
 | Tailwind CSS | Utility-first styling framework via NativeWind |
-| Node.js | Backend JavaScript runtime |
-| Express | Web application framework for the API |
-| Prisma | Next-generation ORM for Node.js |
-| PostgreSQL | Relational database for persistent storage |
-| Clerk | Authentication and user management |
+| Node.js      | Backend JavaScript runtime                     |
+| Express      | Web application framework for the API          |
+| Prisma       | Next-generation ORM for Node.js                |
+| PostgreSQL   | Relational database for persistent storage     |
+| Clerk        | Authentication and user management             |
 
 ## API Documentation
 
 The backend API handles all curriculum delivery and progress tracking. All endpoints except the health check require a valid Bearer token provided by Clerk.
 
 #### GET /api/health
+
 **Description**: Checks the health status of the API and database connection.
 
 **Response**:
+
 ```json
 {
   "status": "ok",
@@ -67,9 +71,11 @@ The backend API handles all curriculum delivery and progress tracking. All endpo
 ```
 
 #### GET /api/users/me
+
 **Description**: Retrieves the current authenticated user profile and overall learning progress. It creates a new user record if one does not exist.
 
 **Response**:
+
 ```json
 {
   "user": {
@@ -91,9 +97,11 @@ The backend API handles all curriculum delivery and progress tracking. All endpo
 ```
 
 #### GET /api/lessons
+
 **Description**: Returns a list of all published lessons ordered by level and sequence.
 
 **Response**:
+
 ```json
 {
   "lessons": [
@@ -109,9 +117,11 @@ The backend API handles all curriculum delivery and progress tracking. All endpo
 ```
 
 #### GET /api/lessons/continue
+
 **Description**: Fetches the next incomplete lesson for the user to resume their learning journey.
 
 **Response**:
+
 ```json
 {
   "lesson": {
@@ -124,9 +134,11 @@ The backend API handles all curriculum delivery and progress tracking. All endpo
 ```
 
 #### GET /api/lessons/path
+
 **Description**: Retrieves the sequence of lessons along with the user lock status and completion progress for each item.
 
 **Response**:
+
 ```json
 {
   "path": [
@@ -149,9 +161,11 @@ The backend API handles all curriculum delivery and progress tracking. All endpo
 ```
 
 #### GET /api/units/path
+
 **Description**: Gets the high-level curriculum path including units and their respective progress statistics.
 
 **Response**:
+
 ```json
 {
   "path": {
@@ -172,9 +186,11 @@ The backend API handles all curriculum delivery and progress tracking. All endpo
 ```
 
 #### GET /api/units/:id
+
 **Description**: Retrieves the complete details of a specific unit including its sections, activities, and vocabulary links.
 
 **Response**:
+
 ```json
 {
   "unit": {
@@ -193,9 +209,11 @@ The backend API handles all curriculum delivery and progress tracking. All endpo
 ```
 
 #### POST /api/activities/:id/attempt
+
 **Description**: Submits a user answer for a specific activity, validates it, and updates experience points and mastery scores.
 
 **Request**:
+
 ```json
 {
   "response": "lerne"
@@ -203,6 +221,7 @@ The backend API handles all curriculum delivery and progress tracking. All endpo
 ```
 
 **Response**:
+
 ```json
 {
   "result": {
@@ -223,9 +242,10 @@ The backend API handles all curriculum delivery and progress tracking. All endpo
 ```
 
 **Errors**:
-*   400: Response payload is missing.
-*   401: Unauthorized request.
-*   404: User or Activity not found.
+
+- 400: Response payload is missing.
+- 401: Unauthorized request.
+- 404: User or Activity not found.
 
 ## Contributing
 
@@ -233,7 +253,7 @@ Contributions are always welcome. Please ensure your code matches the existing f
 
 ## Author Info
 
-Developed by the DeutschFlow Team.
+Developed by the Idancodes.
 
 ## Badges
 
