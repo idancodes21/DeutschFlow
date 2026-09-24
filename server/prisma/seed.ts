@@ -17,11 +17,6 @@ const prisma = new PrismaClient({
   adapter,
 });
 
-// =====================================================
-// EXISTING TEST LESSONS
-// Keep these for the current Home/Learn API
-// =====================================================
-
 const lessons = [
   {
     title: "Greetings & Introductions",
@@ -60,70 +55,83 @@ const lessons = [
   },
 ];
 
-// =====================================================
-// UNIT 1 SECTIONS
-// =====================================================
-
 const unit1Sections = [
   {
     id: "unit-1-explainer",
     type: "EXPLAINER" as const,
-    title: "Concept Explainer",
+    title: "See the pattern",
     description:
-      "Learn the basic patterns that make German different and predictable.",
+      "A 2-minute look at why German feels different — and the one rule that explains most of it.",
     order: 1,
   },
   {
     id: "unit-1-pattern-drills",
     type: "PATTERN_DRILLS" as const,
-    title: "Pattern Drills",
-    description: "Practice the patterns before using them in full sentences.",
+    title: "Try the pattern",
+    description:
+      "Quick, low-pressure reps on the rule alone — no full sentences yet.",
     order: 2,
   },
   {
     id: "unit-1-guided-sentence",
     type: "GUIDED_SENTENCE" as const,
-    title: "Guided Sentence Building",
-    description: "Use the patterns to build simple German sentences.",
+    title: "Build a sentence",
+    description:
+      "Put the pattern to work with the words right there to guide you.",
     order: 3,
   },
   {
     id: "unit-1-recall",
     type: "RECALL" as const,
-    title: "Recall Practice",
-    description: "Practice the same patterns without the earlier hints.",
+    title: "Do it from memory",
+    description:
+      "Same pattern, hints removed. This is where it starts to stick.",
     order: 4,
   },
   {
     id: "unit-1-mixed-review",
     type: "MIXED_REVIEW" as const,
-    title: "Mixed Review",
-    description: "Combine the patterns you have learned.",
+    title: "Mix it up",
+    description: "Combine everything from this unit in one round.",
     order: 5,
   },
   {
     id: "unit-1-listening",
     type: "LISTENING" as const,
-    title: "Listening",
-    description: "Hear the German patterns you have already learned.",
+    title: "Hear it",
+    description:
+      "Match the spoken German to what you've already learned to read.",
     order: 6,
   },
 ];
 
-// =====================================================
-// UNIT 1 ACTIVITIES
-// =====================================================
-
 const unit1Activities = [
-  // ---------------------------------------------------
-  // CONCEPT EXPLAINER
-  // ---------------------------------------------------
+  {
+    id: "unit1-exp-0",
+    sectionId: "unit-1-explainer",
+    type: "INFO" as const,
+    order: 1,
+    title: "Before we start",
+    prompt:
+      "German has a reputation for being hard. Here's why that's mostly a myth.",
+    explanation:
+      "German isn't random — it's one of the most rule-based languages you can learn. Once you see a pattern, it repeats everywhere. That's the whole idea behind this course: pattern first, sentences second, speaking third.",
+    content: {
+      type: "hook",
+      animation: "bounce-in",
+      illustration: "🇩🇪",
+      audioText: "Willkommen! Let's learn German, one pattern at a time.",
+      body: "You won't be thrown into full sentences today. You'll learn two small, reliable patterns and practice just those — nothing else.",
+    },
+    solution: null,
+    xpReward: 2,
+  },
 
   {
     id: "unit1-exp-1",
     sectionId: "unit-1-explainer",
     type: "INFO" as const,
-    order: 1,
+    order: 2,
     title: "German has patterns",
     prompt:
       "The goal is not to memorize every sentence. Learn the pattern behind the sentence.",
@@ -131,7 +139,9 @@ const unit1Activities = [
       "German becomes easier when you notice recurring patterns. We will first understand a pattern, then practice it, and only later remove the hints.",
     content: {
       type: "explanation",
-      body: "DeutschFlow teaches German from the pattern outward: understand the rule, practice the pattern, use it in sentences, recall it, then hear it.",
+      animation: "fade-up",
+      audioText: "Ich lerne Deutsch. I am learning German.",
+      body: "This course teaches German from the pattern outward: understand the rule, practice the pattern, use it in sentences, recall it, then hear it.",
       example: {
         german: "Ich lerne Deutsch.",
         english: "I am learning German.",
@@ -145,13 +155,15 @@ const unit1Activities = [
     id: "unit1-exp-2",
     sectionId: "unit-1-explainer",
     type: "INFO" as const,
-    order: 2,
+    order: 3,
     title: "German nouns are capitalized",
     prompt: "Notice the capital letter in important German nouns.",
     explanation:
-      "In German, nouns are written with a capital letter. This helps you recognize nouns when reading.",
+      "In German, nouns are written with a capital letter — every noun, not just names. This is one of the easiest patterns to spot, and it instantly helps you find the 'things' in a sentence when reading.",
     content: {
       type: "explanation",
+      animation: "highlight-caps",
+      audioText: "Das Buch ist neu. Ich lerne Deutsch.",
       examples: [
         {
           german: "Das Buch ist neu.",
@@ -172,13 +184,15 @@ const unit1Activities = [
     id: "unit1-exp-3",
     sectionId: "unit-1-explainer",
     type: "INFO" as const,
-    order: 3,
+    order: 4,
     title: "The verb usually comes second",
     prompt: "Look at the position of the verb in a simple statement.",
     explanation:
-      "In a normal German statement, the conjugated verb usually occupies the second position.",
+      "In a normal German statement, the conjugated verb almost always sits in the second position — even if something other than the subject starts the sentence. This one rule will explain a lot of German word order later on.",
     content: {
       type: "explanation",
+      animation: "slide-swap",
+      audioText: "Ich lerne Deutsch. Heute lerne ich Deutsch.",
       examples: [
         {
           german: "Ich lerne Deutsch.",
@@ -195,10 +209,6 @@ const unit1Activities = [
     xpReward: 2,
   },
 
-  // ---------------------------------------------------
-  // PATTERN DRILLS
-  // ---------------------------------------------------
-
   {
     id: "unit1-drill-1",
     sectionId: "unit-1-pattern-drills",
@@ -208,6 +218,7 @@ const unit1Activities = [
     prompt: "Which sentence uses German capitalization correctly?",
     explanation: "German nouns begin with a capital letter.",
     content: {
+      animation: "pop-correct",
       options: ["Das buch ist neu.", "Das Buch ist neu.", "Das buch ist Neu."],
     },
     solution: {
@@ -225,6 +236,7 @@ const unit1Activities = [
     prompt: "Which sentence follows the normal German statement pattern?",
     explanation: "The conjugated verb comes in the second position.",
     content: {
+      animation: "pop-correct",
       options: [
         "Ich Deutsch lerne.",
         "Ich lerne Deutsch.",
@@ -246,6 +258,7 @@ const unit1Activities = [
     prompt: "Ich ___ Deutsch.",
     explanation: "The subject 'ich' uses the first-person singular verb form.",
     content: {
+      animation: "pop-correct",
       wordBank: ["lerne", "lernst", "lernen"],
     },
     solution: {
@@ -253,10 +266,6 @@ const unit1Activities = [
     },
     xpReward: 5,
   },
-
-  // ---------------------------------------------------
-  // GUIDED SENTENCE BUILDING
-  // ---------------------------------------------------
 
   {
     id: "unit1-guided-1",
@@ -268,6 +277,7 @@ const unit1Activities = [
     explanation:
       "Start with the subject, then place the conjugated verb in the second position.",
     content: {
+      animation: "tile-drop",
       wordBank: ["Ich", "lerne", "Deutsch", "."],
       hint: "Subject → verb → rest of sentence",
       translation: "I am learning German.",
@@ -288,6 +298,7 @@ const unit1Activities = [
     explanation:
       "Even when another element comes first, the conjugated verb remains in the second position.",
     content: {
+      animation: "tile-drop",
       wordBank: ["Heute", "lerne", "ich", "Deutsch", "."],
       hint: "Time → verb → subject → rest",
       translation: "Today I am learning German.",
@@ -298,10 +309,6 @@ const unit1Activities = [
     xpReward: 5,
   },
 
-  // ---------------------------------------------------
-  // RECALL
-  // ---------------------------------------------------
-
   {
     id: "unit1-recall-1",
     sectionId: "unit-1-recall",
@@ -310,7 +317,9 @@ const unit1Activities = [
     title: "Recall the verb",
     prompt: "Heute ___ ich Deutsch.",
     explanation: null,
-    content: {},
+    content: {
+      animation: "pop-correct",
+    },
     solution: {
       answer: "lerne",
     },
@@ -325,16 +334,14 @@ const unit1Activities = [
     title: "Recall the verb",
     prompt: "Ich ___ in Lagos.",
     explanation: null,
-    content: {},
+    content: {
+      animation: "pop-correct",
+    },
     solution: {
       answer: "wohne",
     },
     xpReward: 7,
   },
-
-  // ---------------------------------------------------
-  // MIXED REVIEW
-  // ---------------------------------------------------
 
   {
     id: "unit1-mixed-1",
@@ -345,6 +352,7 @@ const unit1Activities = [
     prompt: "Which sentence is correct?",
     explanation: "Check both the noun capitalization and the verb position.",
     content: {
+      animation: "pop-correct",
       options: [
         "Ich lerne deutsch.",
         "Ich lerne Deutsch.",
@@ -366,6 +374,7 @@ const unit1Activities = [
     prompt: "Build the correct sentence.",
     explanation: "Use the verb-second pattern and keep the noun capitalized.",
     content: {
+      animation: "tile-drop",
       wordBank: ["Heute", "lerne", "ich", "Deutsch", "."],
       translation: "Today I am learning German.",
     },
@@ -374,10 +383,6 @@ const unit1Activities = [
     },
     xpReward: 7,
   },
-
-  // ---------------------------------------------------
-  // LISTENING
-  // ---------------------------------------------------
 
   {
     id: "unit1-listen-1",
@@ -389,6 +394,7 @@ const unit1Activities = [
     explanation:
       "You already learned this written pattern. Now connect the written form to its spoken form.",
     content: {
+      animation: "waveform",
       audioText: "Ich lerne Deutsch.",
       options: [
         "Ich lerne Deutsch.",
@@ -411,6 +417,7 @@ const unit1Activities = [
     prompt: "Listen and choose the sentence you hear.",
     explanation: "Notice the verb position even when 'Heute' comes first.",
     content: {
+      animation: "waveform",
       audioText: "Heute lerne ich Deutsch.",
       options: [
         "Heute lerne ich Deutsch.",
@@ -423,11 +430,27 @@ const unit1Activities = [
     },
     xpReward: 10,
   },
-];
 
-// =====================================================
-// UNIT 1 VOCABULARY
-// =====================================================
+  {
+    id: "unit1-complete-1",
+    sectionId: "unit-1-listening",
+    type: "INFO" as const,
+    order: 3,
+    title: "Unit complete",
+    prompt: "You've finished your first unit.",
+    explanation:
+      "Two patterns down: capitalized nouns, and verb-second word order. Both will show up in almost every unit from here on.",
+    content: {
+      type: "completion",
+      animation: "confetti",
+      illustration: "🎉",
+      audioText: "Super gemacht! Well done.",
+      body: "Next up: numbers — so you can count, tell time, and talk about prices right away.",
+    },
+    solution: null,
+    xpReward: 5,
+  },
+];
 
 const unit1Vocabulary = [
   {
@@ -472,10 +495,6 @@ const unit1Vocabulary = [
   },
 ];
 
-// =====================================================
-// UNIT 1 GRAMMAR
-// =====================================================
-
 const unit1Grammar = [
   {
     id: "unit1-grammar-capitalization",
@@ -497,15 +516,7 @@ const unit1Grammar = [
   },
 ];
 
-// =====================================================
-// MAIN
-// =====================================================
-
 async function main() {
-  // ---------------------------------------------------
-  // Existing A1 lessons
-  // ---------------------------------------------------
-
   for (const lesson of lessons) {
     await prisma.lesson.upsert({
       where: {
@@ -520,10 +531,6 @@ async function main() {
   }
 
   console.log("A1 lessons seeded successfully.");
-
-  // ---------------------------------------------------
-  // Learning path
-  // ---------------------------------------------------
 
   const learningPath = await prisma.learningPath.upsert({
     where: {
@@ -546,10 +553,6 @@ async function main() {
       isPublished: true,
     },
   });
-
-  // ---------------------------------------------------
-  // Unit 1
-  // ---------------------------------------------------
 
   const unit1 = await prisma.unit.upsert({
     where: {
@@ -576,10 +579,6 @@ async function main() {
     },
   });
 
-  // ---------------------------------------------------
-  // Unit 1 sections
-  // ---------------------------------------------------
-
   for (const section of unit1Sections) {
     await prisma.unitSection.upsert({
       where: {
@@ -603,9 +602,14 @@ async function main() {
     });
   }
 
-  // ---------------------------------------------------
-  // Unit 1 activities
-  // ---------------------------------------------------
+  await prisma.activity.updateMany({
+    where: {
+      sectionId: { in: unit1Sections.map((section) => section.id) },
+    },
+    data: {
+      order: { increment: 1000 },
+    },
+  });
 
   for (const activity of unit1Activities) {
     await prisma.activity.upsert({
@@ -642,10 +646,6 @@ async function main() {
     });
   }
 
-  // ---------------------------------------------------
-  // Unit 1 vocabulary
-  // ---------------------------------------------------
-
   for (const [index, vocabulary] of unit1Vocabulary.entries()) {
     await prisma.vocabulary.upsert({
       where: {
@@ -674,10 +674,6 @@ async function main() {
       },
     });
   }
-
-  // ---------------------------------------------------
-  // Unit 1 grammar
-  // ---------------------------------------------------
 
   for (const [index, grammar] of unit1Grammar.entries()) {
     await prisma.grammar.upsert({
@@ -710,10 +706,6 @@ async function main() {
 
   console.log("Unit 1 seeded successfully.");
 }
-
-// =====================================================
-// RUN SEED
-// =====================================================
 
 main()
   .catch((error) => {
