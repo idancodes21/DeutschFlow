@@ -2,25 +2,39 @@ import { useQuery } from "@tanstack/react-query";
 
 import { apiFetch } from "@/lib/api";
 
-export interface ContinueLesson {
+export interface ContinueActivity {
+  id: string;
+  title: string | null;
+  order: number;
+}
+
+export interface ContinueSection {
+  id: string;
+  title: string;
+  type: string;
+  progress: number;
+}
+
+export interface ContinueUnit {
   id: string;
   title: string;
   description: string | null;
-  level: number;
   order: number;
+  cefrLevel: string | null;
   progress: number;
   completed: boolean;
-  startedAt: string | null;
-  completedAt: string | null;
+  allCompleted: boolean;
+  currentSection: ContinueSection | null;
+  currentActivity: ContinueActivity | null;
 }
 
-interface ContinueLessonResponse {
-  lesson: ContinueLesson | null;
+interface ContinueUnitResponse {
+  unit: ContinueUnit | null;
 }
 
 export function useContinueLearning() {
-  return useQuery<ContinueLessonResponse>({
-    queryKey: ["continue-lesson"],
-    queryFn: () => apiFetch("/api/lessons/continue"),
+  return useQuery<ContinueUnitResponse>({
+    queryKey: ["continue-unit"],
+    queryFn: () => apiFetch("/api/units/continue"),
   });
 }

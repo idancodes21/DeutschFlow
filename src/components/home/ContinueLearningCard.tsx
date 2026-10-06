@@ -1,46 +1,46 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
 import { useContinueLearning } from "@/hooks/useContinueLearning";
-import { router } from "expo-router";
 
 export default function ContinueLearningCard() {
   const { data, isLoading, isError } = useContinueLearning();
 
-  const lesson = data?.lesson;
+  const unit = data?.unit;
 
   if (isLoading) {
     return (
       <View className="-mt-12 px-5">
         <View className="overflow-hidden rounded-[22px] border border-gray-100 bg-white p-4 shadow-sm">
           <Text className="font-nunito text-sm text-[#555968]">
-            Loading your lesson...
+            Loading your learning path...
           </Text>
         </View>
       </View>
     );
   }
 
-  if (isError || !lesson) {
+  if (isError || !unit) {
     return (
       <View className="-mt-12 px-5">
         <View className="overflow-hidden rounded-[22px] border border-gray-100 bg-white p-4 shadow-sm">
           <Text className="font-nunito text-sm text-[#555968]">
-            No lesson available right now.
+            No learning content available right now.
           </Text>
         </View>
       </View>
     );
   }
 
-  const levelLabel =
-    lesson.level === 1
-      ? "A1"
-      : lesson.level === 2
-        ? "A2"
-        : `Level ${lesson.level}`;
+  const levelLabel = unit.cefrLevel ?? "A1";
+  const progress = Math.min(Math.max(unit.progress, 0), 100);
 
-  const progress = Math.min(Math.max(lesson.progress, 0), 100);
+  const actionLabel = unit.allCompleted
+    ? "View Learning Path"
+    : progress > 0
+      ? "Continue Learning"
+      : "Start Learning";
 
   return (
     <View className="-mt-12 px-5">
@@ -52,15 +52,17 @@ export default function ContinueLearningCard() {
 
           <View className="flex-1">
             <Text className="font-nunito-semibold text-xs uppercase tracking-wide text-primary">
-              Continue Learning
+              {unit.allCompleted
+                ? "Learning Path Complete"
+                : "Continue Learning"}
             </Text>
 
             <Text className="mt-1 font-fredoka-semibold text-xl text-[#161A2A]">
-              {levelLabel} · Lesson {lesson.order}
+              {levelLabel} · Unit {unit.order}
             </Text>
 
             <Text className="mt-1 font-nunito-semibold text-sm text-[#555968]">
-              {lesson.title}
+              {unit.title}
             </Text>
           </View>
 
@@ -71,9 +73,21 @@ export default function ContinueLearningCard() {
           />
         </View>
 
-        {lesson.description && (
+        {unit.description && (
           <Text className="mt-3 pr-4 font-nunito text-sm leading-5 text-[#555968]">
-            {lesson.description}
+            {unit.description}
+          </Text>
+        )}
+
+        {unit.currentSection && (
+          <Text className="mt-3 font-nunito-semibold text-sm text-primary">
+            {unit.currentSection.title}
+          </Text>
+        )}
+
+        {unit.allCompleted && (
+          <Text className="mt-3 font-nunito-semibold text-sm text-green">
+            You've completed all available units.
           </Text>
         )}
 
@@ -81,7 +95,9 @@ export default function ContinueLearningCard() {
           <View className="h-2 flex-1 overflow-hidden rounded-full bg-gray-200">
             <View
               className="h-full rounded-full bg-primary"
-              style={{ width: `${progress}%` }}
+              style={{
+                width: `${progress}%`,
+              }}
             />
           </View>
 
@@ -93,11 +109,21 @@ export default function ContinueLearningCard() {
         <TouchableOpacity
           className="mt-4 h-12 flex-row items-center justify-center rounded-xl bg-primary"
           onPress={() => {
-            router.push("/learn");
+            if (unit.allCompleted) {
+              router.push("/learn");
+              return;
+            }
+
+            router.push({
+              pathname: "/unit/[id]",
+              params: {
+                id: unit.id,
+              },
+            });
           }}
         >
           <Text className="font-nunito-bold text-base text-white">
-            {progress > 0 ? "Continue Lesson" : "Start Lesson"}
+            {actionLabel}
           </Text>
 
           <Ionicons

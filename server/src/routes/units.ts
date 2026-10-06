@@ -115,6 +115,188 @@ router.get("/path", async (req, res) => {
   }
 });
 
+router.get("/continue", async (req, res) => {
+  try {
+    const { isAuthenticated, userId } = getAuth(req);
+
+    if (!isAuthenticated || !userId) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        clerkId: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const units = await prisma.unit.findMany({
+      where: {
+        isPublished: true,
+        path: {
+          isPublished: true,
+        },
+      },
+      orderBy: [
+        {
+          path: {
+            order: "asc",
+          },
+        },
+        {
+          order: "asc",
+        },
+      ],
+      include: {
+        progress: {
+          where: {
+            userId: user.id,
+          },
+          select: {
+            progress: true,
+            masteryScore: true,
+            completed: true,
+            startedAt: true,
+            completedAt: true,
+          },
+        },
+
+        sections: {
+          orderBy: {
+            order: "asc",
+          },
+          include: {
+            progress: {
+              where: {
+                userId: user.id,
+              },
+              select: {
+                progress: true,
+                completed: true,
+              },
+            },
+
+            activities: {
+              where: {
+                isPublished: true,
+              },
+              orderBy: {
+                order: "asc",
+              },
+              select: {
+                id: true,
+                title: true,
+                order: true,
+                progress: {
+                  where: {
+                    userId: user.id,
+                  },
+                  select: {
+                    completed: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const currentUnit = units.find(
+      (unit) => !(unit.progress[0]?.completed ?? false),
+    );
+
+    const lastUnit = units.at(-1);
+
+    if (!currentUnit) {
+      if (!lastUnit) {
+        return res.json({
+          unit: null,
+        });
+      }
+
+      const progress = lastUnit.progress[0] ?? null;
+
+      return res.json({
+        unit: {
+          id: lastUnit.id,
+          title: lastUnit.title,
+          description: lastUnit.description,
+          order: lastUnit.order,
+          cefrLevel: lastUnit.cefrLevel,
+
+          progress: progress?.progress ?? 100,
+          completed: true,
+          allCompleted: false,
+
+          currentSection: null,
+          currentActivity: null,
+        },
+      });
+    }
+
+    const unitProgress = currentUnit.progress[0] ?? null;
+
+    let currentSection = null;
+    let currentActivity = null;
+
+    for (const section of currentUnit.sections) {
+      const incompleteActivity = section.activities.find(
+        (activity) => !(activity.progress[0]?.completed ?? false),
+      );
+
+      if (incompleteActivity) {
+        currentSection = {
+          id: section.id,
+          title: section.title,
+          type: section.type,
+          progress: section.progress[0]?.progress ?? 0,
+        };
+
+        currentActivity = {
+          id: incompleteActivity.id,
+          title: incompleteActivity.title,
+          order: incompleteActivity.order,
+        };
+
+        break;
+      }
+    }
+
+    return res.json({
+      unit: {
+        id: currentUnit.id,
+        title: currentUnit.title,
+        description: currentUnit.description,
+        order: currentUnit.order,
+        cefrLevel: currentUnit.cefrLevel,
+
+        progress: unitProgress?.progress ?? 0,
+        completed: unitProgress?.completed ?? false,
+
+        currentSection,
+        currentActivity,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to get continue unit:", error);
+
+    return res.status(500).json({
+      message: "Failed to get continue unit",
+    });
+  }
+});
+
 router.get("/:id", async (req, res) => {
   try {
     const { isAuthenticated, userId } = getAuth(req);
