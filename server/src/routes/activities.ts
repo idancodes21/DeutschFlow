@@ -1,8 +1,8 @@
 import { getAuth } from "@clerk/express";
 import { Router } from "express";
 import { Prisma } from "../../generated/prisma/client.js";
-
 import { prisma } from "../lib/prisma.js";
+import { calculateStreak } from "../lib/streak.js";
 
 const router = Router();
 
@@ -373,10 +373,23 @@ router.post("/:id/attempt", async (req, res) => {
           },
         });
 
-        await tx.learningProgress.upsert({
+        const existingLearningProgress = await tx.learningProgress.findUnique({
           where: {
             userId: user.id,
           },
+        });
+
+        const newStreak = calculateStreak(
+          existingLearningProgress?.streak ?? 0,
+          existingLearningProgress?.lastActivityAt ?? null,
+          now,
+        );
+
+        const updatedLearningProgress = await tx.learningProgress.upsert({
+          where: {
+            userId: user.id,
+          },
+
           update: {
             xp: {
               increment: xpEarned,
@@ -386,12 +399,18 @@ router.post("/:id/attempt", async (req, res) => {
               increment: newlyCompletedUnit ? 1 : 0,
             },
 
+            streak: newStreak,
+
             lastActivityAt: now,
           },
+
           create: {
             userId: user.id,
             xp: xpEarned,
             unitsCompleted: newlyCompletedUnit ? 1 : 0,
+
+            streak: 1,
+
             lastActivityAt: now,
           },
         });
@@ -406,6 +425,8 @@ router.post("/:id/attempt", async (req, res) => {
           newlyCompleted,
           newlyCompletedSection,
           newlyCompletedUnit,
+
+          streak: updatedLearningProgress.streak,
         };
       },
       {
@@ -425,6 +446,8 @@ router.post("/:id/attempt", async (req, res) => {
         sectionCompleted: result.sectionProgress.completed,
 
         unitCompleted: result.unitProgress.completed,
+
+        streak: result.streak,
 
         progress: {
           activity: result.activityProgress,
