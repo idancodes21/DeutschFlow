@@ -6,6 +6,7 @@ import express from "express";
 import activitiesRouter from "./routes/activities.js";
 import healthRouter from "./routes/health.js";
 import lessonsRouter from "./routes/lessons.js";
+import practiceRouter from "./routes/practice.js";
 import unitsRouter from "./routes/units.js";
 import usersRouter from "./routes/users.js";
 
@@ -29,6 +30,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/lessons", lessonsRouter);
 app.use("/api/units", unitsRouter);
 app.use("/api/activities", activitiesRouter);
+app.use("/api/practice", practiceRouter);
 
 app.listen(PORT, () => {
   console.log(`DeutschFlow API running on port ${PORT}`);
